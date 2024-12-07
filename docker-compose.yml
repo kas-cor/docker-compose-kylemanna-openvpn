@@ -6,6 +6,7 @@ services:
       args:
         buildno: 1
     image: kylemanna-openvpn:1
+    privileged: true
     restart: always
     cap_add:
       - NET_ADMIN
