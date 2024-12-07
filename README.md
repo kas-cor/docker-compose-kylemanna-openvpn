@@ -15,6 +15,7 @@ Prerequisites: [Install Docker](https://docs.docker.com/engine/installation/) an
 ```bash
 git clone https://github.com/kas-cor/docker-compose-kylemanna-openvpn.git
 cd docker-compose-kylemanna-openvpn
+git submodule update --init --recursive
 ```
 2. Copy `.env.sample` to `.env` file and change the `.env` environment-file to your needs
 ```bash
