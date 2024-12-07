@@ -1,79 +1,122 @@
-# docker-compose-kylemanna-openvpn
-Simple script based Docker-Compose usage of kylemanna/openvpn Docker image.
+# Docker Compose OpenVPN Server
+
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![OpenVPN](https://img.shields.io/badge/OpenVPN-EA7E20?style=for-the-badge&logo=openvpn&logoColor=white)](https://openvpn.net/)
+
+English | [Русский](README_RU.md)
+
+Simple and secure Docker-Compose setup for running OpenVPN server based on kylemanna/openvpn Docker image.
 Up and running in less than two minutes!
 
-## Why this fork
+## 🌟 Features
 
-I'm paranoid. I don't like to use a binary image i found on the web. 
-I want to be sure its build from a known Dockerfile and context and can be easily reviwed if needed. 
+- Easy to setup and manage
+- Secure by default configuration
+- Script-based client management
+- Support for both UDP and TCP protocols
+- Automatic client configuration generation
+- Client certificate revocation support
+- Detailed logging of all operations
 
-## Get Started!
+## 📋 Prerequisites
 
-Prerequisites: [Install Docker](https://docs.docker.com/engine/installation/) and [Docker-Compose](https://docs.docker.com/compose/install/)
+Before you begin, ensure you have the following installed:
+- [Docker](https://docs.docker.com/engine/installation/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-1. Clone the Repo
+## 🚀 Quick Start
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/kas-cor/docker-compose-kylemanna-openvpn.git
+   cd docker-compose-kylemanna-openvpn
+   ```
+
+2. **Configure Environment**
+   ```bash
+   cp .env.sample .env
+   ```
+   Edit `.env` file with your settings:
+   ```env
+   # Server Configuration
+   HOSTNAME=myserver.com    # Your server's hostname or IP
+   PROTO=udp               # Protocol (udp/tcp)
+   PUBLIC_PORT=1194        # Public port for OpenVPN
+   ```
+
+3. **Install OpenVPN Server**
+   ```bash
+   ./00_install-OpenVPN-Server.sh
+   ```
+
+4. **Start the Server**
+   ```bash
+   docker-compose up -d
+   ```
+
+## 👥 Client Management
+
+### Creating New Clients
+
 ```bash
-git clone https://github.com/kas-cor/docker-compose-kylemanna-openvpn.git
-cd docker-compose-kylemanna-openvpn
-git submodule update --init --recursive
+# Without password protection
+./create-new-client-and-get-conf.sh client_name nopass
+
+# With password protection
+./create-new-client-and-get-conf.sh client_name
 ```
-2. Copy `.env.sample` to `.env` file and change the `.env` environment-file to your needs
+
+The client configuration file will be saved to `client-confs/client_name.ovpn`
+
+### Retrieving Existing Client Configuration
+
 ```bash
-cp .env.sample .env
-```
-Sample `.env` file:
-```
-# Environment File for OpenVPN Server
-
-# Hostname on which your server is reachable
-HOSTNAME=myserver.com
-
-# Protocol to use by OpenVPN: TCP/UDP
-PROTO=udp
-
-# The port which should be exposed on the docker host
-PUBLIC_PORT=1194
-```
-3. Install the OpenVPN Server
-```
-./00_install-OpenVPN-Server.sh
-```
-4. Start the OpenVPN Server
-```
-docker-compose up -d
+./get-client-conf.sh client_name
 ```
 
-## Create new OpenVPN Client
-The creation of new clients and configuration is also script based.
-```
-# Create client without private key passphrase
-./create-new-client-and-get-conf.sh myClient nopass
+### Revoking Client Access
 
-# Create client with private key passphrase
-./create-new-client-and-get-conf.sh myClient
-```
-The client will get registered in the server and a myClient.ovpn configuration file will be saved to `client-confs/myClient.ovpn`
-
-To get the client configuration file of a previously created client:
-```
-./get-client-conf.sh myClient
+```bash
+./revoke-client-conf.sh client_name
 ```
 
-## Revoke Client
-You may want to revoke clients from accessing your server.
-```
-./revoke-client-conf.sh myClient
-```
-This will revoke the client's certificate and remove all files and configuration from your server
+## 📁 Directory Structure
 
-## Script Logs
-All script activities of created or revoked clients get logged in `./VPNclients.log`
+- `client-confs/` - Client configuration files
+- `VPNclients.log` - Client management log file
+- `.env` - Environment configuration
+- `docker-compose.yml` - Docker compose configuration
 
-## Configuration Volumes
-This Docker-Compose file uses Docker's volumes stored in `/var/lib/docker/volumes/YOURSERVICENAME_ovpndata`. You'll find all OpenVPN related configurations in this directory. 
-If you want to store your configurations in a more accessible place like your service folder, consider changing the volumes mapping in `docker-compose.yml` to e.g. `./ovpn-data:/etc/openvpn`. 
-Don't forget that this folder will be owned by `root` so you might want to `sudo chown -R MYUSER: ./ovpn-data`
+## 💾 Data Persistence
 
-## License
+By default, OpenVPN data is stored in Docker volumes at `/var/lib/docker/volumes/YOURSERVICENAME_ovpndata`.
+
+To store data in a custom location:
+1. Modify `docker-compose.yml` to use a local path:
+   ```yaml
+   volumes:
+     - ./ovpn-data:/etc/openvpn
+   ```
+2. Set proper permissions:
+   ```bash
+   sudo chown -R $USER: ./ovpn-data
+   ```
+
+## 🔒 Security Notes
+
+- All client activities are logged in `VPNclients.log`
+- Client certificates can be revoked at any time
+- Uses OpenVPN's secure defaults
+- Built from source for transparency
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+This setup is provided as-is. Always review security settings and configurations before deploying in a production environment.
