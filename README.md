@@ -2,16 +2,25 @@
 Simple script based Docker-Compose usage of kylemanna/openvpn Docker image.
 Up and running in less than two minutes!
 
+## Why this fork
+
+I'm paranoid. I don't like to use a binary image i found on the web. 
+I want to be sure its build from a known Dockerfile and context and can be easily reviwed if needed. 
+
 ## Get Started!
 
 Prerequisites: [Install Docker](https://docs.docker.com/engine/installation/) and [Docker-Compose](https://docs.docker.com/compose/install/)
 
 1. Clone the Repo
-```
-git clone https://github.com/tammon/docker-compose-kylemanna-openvpn.git
+```bash
+git clone https://github.com/kas-cor/docker-compose-kylemanna-openvpn.git
 cd docker-compose-kylemanna-openvpn
 ```
-2. Change the `.env` environment-file to your needs
+2. Copy `.env.sample` to `.env` file and change the `.env` environment-file to your needs
+```bash
+cp .env.sample .env
+```
+Sample `.env` file:
 ```
 # Environment File for OpenVPN Server
 
@@ -63,3 +72,7 @@ All script activities of created or revoked clients get logged in `./VPNclients.
 This Docker-Compose file uses Docker's volumes stored in `/var/lib/docker/volumes/YOURSERVICENAME_ovpndata`. You'll find all OpenVPN related configurations in this directory. 
 If you want to store your configurations in a more accessible place like your service folder, consider changing the volumes mapping in `docker-compose.yml` to e.g. `./ovpn-data:/etc/openvpn`. 
 Don't forget that this folder will be owned by `root` so you might want to `sudo chown -R MYUSER: ./ovpn-data`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

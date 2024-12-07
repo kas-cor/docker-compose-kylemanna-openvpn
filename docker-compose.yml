@@ -1,13 +1,26 @@
 services:
   server:
-    image: kylemanna/openvpn:latest
+    build:
+      context: ./kylemanna-docker-openvpn
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    image: kylemanna-openvpn:1
     restart: always
     cap_add:
       - NET_ADMIN
     ports:
       - "$PUBLIC_PORT:1194/$PROTO"
     volumes:
-      - ovpn-data:/etc/openvpn
-
-volumes:
-  ovpn-data:
+      - ./ovpn-data:/etc/openvpn
+      - ./logs:/var/log/openvpn
+    healthcheck:
+      test: ["CMD", "pidof", "openvpn"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
